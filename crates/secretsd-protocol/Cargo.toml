@@ -1,0 +1,16 @@
+[package]
+name = "secretsd-protocol"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.93"
+license = "MIT"
+description = "Bounded public protocol for a Linux-local secrets broker"
+
+[dependencies]
+prost = "0.14.4"
+thiserror = "2.0.21"
+zeroize = "1.9.0"
+
+
+[lints]
+workspace = true

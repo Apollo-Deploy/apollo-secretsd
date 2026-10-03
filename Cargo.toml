@@ -1,0 +1,104 @@
+[workspace]
+members = ["crates/secretsd-protocol"]
+resolver = "3"
+
+# Shared by the daemon, CLI, library, tests, examples and public protocol crate.
+[workspace.lints.rust]
+unsafe_op_in_unsafe_fn = "deny"
+unreachable_pub = "deny"
+unused_must_use = "deny"
+unused_unsafe = "deny"
+unused_lifetimes = "deny"
+unexpected_cfgs = "deny"
+
+[workspace.lints.rustdoc]
+broken_intra_doc_links = "deny"
+invalid_codeblock_attributes = "deny"
+
+[workspace.lints.clippy]
+correctness = { level = "deny", priority = -1 }
+suspicious = { level = "deny", priority = -1 }
+style = { level = "deny", priority = -1 }
+complexity = { level = "deny", priority = -1 }
+perf = { level = "deny", priority = -1 }
+
+# Production code must report errors and document unsafe operations.
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+undocumented_unsafe_blocks = "deny"
+missing_safety_doc = "deny"
+dbg_macro = "deny"
+todo = "deny"
+unimplemented = "deny"
+mem_forget = "deny"
+allow_attributes_without_reason = "deny"
+
+# Selected pedantic/nursery rules with concrete readability or ownership value.
+cast_lossless = "deny"
+checked_conversions = "deny"
+doc_markdown = "deny"
+semicolon_if_nothing_returned = "deny"
+used_underscore_binding = "deny"
+manual_let_else = "deny"
+match_same_arms = "deny"
+redundant_closure_for_method_calls = "deny"
+inefficient_to_string = "deny"
+implicit_clone = "deny"
+redundant_clone = "deny"
+redundant_else = "deny"
+or_fun_call = "deny"
+use_self = "deny"
+
+[package]
+name = "apollo-secretsd"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.93"
+autoexamples = false
+license = "MIT"
+repository = "https://github.com/Apollo-Deploy/apollo-secretsd"
+description = "Standalone Linux-local capability-authorized encrypted secrets broker"
+
+[features]
+default = []
+tpm2 = ["dep:tss-esapi"]
+
+[[example]]
+name = "generic_recipient"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+tss-esapi = { version = "7.7.0", optional = true }
+
+[dependencies]
+secretsd-protocol = { path = "crates/secretsd-protocol", version = "=0.1.0" }
+chacha20poly1305 = { version = "0.11.0", default-features = false, features = ["zeroize"] }
+poly1305 = { version = "0.9.0", features = ["zeroize"] }
+getrandom = "0.4.3"
+hkdf = "0.13.0"
+hmac = { version = "0.13.0", features = ["zeroize"] }
+sha2 = { version = "0.11.0", features = ["zeroize"] }
+subtle = "2.6.1"
+zeroize = "1.9.0"
+rusqlite = { version = "0.38", features = ["bundled", "limits"] }
+rustix = { version = "1.1.4", features = ["event", "fs", "mm", "net", "process", "system", "time"] }
+mio = { version = "1.2", features = ["os-poll", "os-ext"] }
+prost = "0.14.4"
+thiserror = "2.0.21"
+libc = "0.2"
+signal-hook = { version = "0.4.4", default-features = false }
+
+[dev-dependencies]
+rusqlite = { version = "0.38", features = ["hooks"] }
+tempfile = "3.27"
+proptest = "1.10"
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
+overflow-checks = true
+
+[lints]
+workspace = true
